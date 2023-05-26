@@ -3,13 +3,17 @@ package com.djatscode.newsapp.views
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.djatscode.newsapp.R
 import com.djatscode.newsapp.databinding.ActivityMainBinding
 import com.djatscode.newsapp.models.headline.HeadlineModel
+import com.djatscode.newsapp.models.news.NewsModel
 import com.djatscode.newsapp.networks.ApiClient
 import com.djatscode.newsapp.networks.ApiInterface
+import com.djatscode.newsapp.views.adapters.NewsAdapter
 import kotlinx.android.synthetic.main.activity_main.img_headline
+import kotlinx.android.synthetic.main.activity_main.recyclerView
 import kotlinx.android.synthetic.main.activity_main.tv_author_headline
 import kotlinx.android.synthetic.main.activity_main.tv_date_headline
 import kotlinx.android.synthetic.main.activity_main.txt_title_headline
@@ -26,9 +30,9 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         val apiInterface : ApiInterface = ApiClient.getClient().create(ApiInterface::class.java)
-        val call : Call<HeadlineModel> = apiInterface.getHeadlines("us", ApiClient.API_KEY)
 
-            call.enqueue(object : Callback<HeadlineModel>{
+        //Headline call api
+        apiInterface.getHeadlines("us", ApiClient.API_KEY).enqueue(object : Callback<HeadlineModel>{
                 override fun onResponse(
                     call: Call<HeadlineModel>,
                     response: Response<HeadlineModel>
@@ -56,7 +60,28 @@ class MainActivity : AppCompatActivity() {
                     Log.d("Hit Headline", "Gagal fetch news")
                 }
 
-            })
+            }
+        )
+
+        //NewsApi call
+        apiInterface.getArticle("apple", ApiClient.API_KEY).enqueue(object : Callback<NewsModel>{
+            override fun onResponse(call: Call<NewsModel>, response: Response<NewsModel>) {
+                val news = response.body()?.articles
+
+                Log.d("Hit News", "News size ${news}")
+
+                binding.apply {
+                    recyclerView.layoutManager = LinearLayoutManager(this@MainActivity)
+                    recyclerView.adapter = NewsAdapter(news)
+                }
+            }
+
+            override fun onFailure(call: Call<NewsModel>, t: Throwable) {
+                Log.d("Hit News", "Gagal Fetch")
+            }
+
+        }
+        )
 
     }
 }

@@ -17,6 +17,7 @@ interface ApiInterface {
 
     @GET("everything")
     fun getArticle(
+        @Query("q") q: String?,
         @Query("apikey") apikey: String?
     ): Call<NewsModel>
 }
