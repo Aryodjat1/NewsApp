@@ -20,7 +20,6 @@
             android:id="@+id/circleImageView"
             android:layout_width="50dp"
             android:layout_height="50dp"
-            android:background="blu"
             android:src="@drawable/img_mandiri" />
 
         <TextView
